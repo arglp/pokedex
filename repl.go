@@ -4,9 +4,23 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+
+	"github.com/arglp/pokedex/internal/pokeapi"
 )
 
-func startRepl() {
+type config struct{
+	pokeapiClient		pokeapi.Client
+	nextLocationsURL	*string
+	prevLocationsURL	*string
+}
+
+type cliCommand struct {
+	name		string
+	description	string
+	callback	func(*config) error
+}
+
+func startRepl(cfg *config) {
 	scanner := bufio.NewScanner(os.Stdin)
 	commands := getCommandRegister()
 
@@ -19,18 +33,12 @@ func startRepl() {
 		if !exists {
 			fmt.Println("Unknown command")
 		} else {
-			err := command.callback()
+			err := command.callback(cfg)
 			if err != nil {
 				fmt.Println(err)
 			}
 		}
 	}
-}
-
-type cliCommand struct {
-	name		string
-	description	string
-	callback	func() error
 }
 
 func getCommandRegister() map[string]cliCommand{
@@ -44,6 +52,16 @@ func getCommandRegister() map[string]cliCommand{
 			name:			"help",
 			description:	"Displays a help message",
 			callback:		commandHelp,
+		},
+		"map": {
+			name:			"map",
+			description:    "Get the next page of locations",
+			callback:		commandMapf,
+		},
+		"mapb": {
+			name:			"mapb",
+			description:    "Get the previous page of locations",
+			callback:		commandMapb,
 		},
 	}
 	return commands
