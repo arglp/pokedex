@@ -29,12 +29,12 @@ func GetAreas (c Client, url string) (AreaLocationList, error) {
 
 	req, err := http.NewRequest("GET", fullUrl, nil)
 	if err != nil {
-		fmt.Errorf("Error making Request: %v", err)
+		return AreaLocationList{}, fmt.Errorf("error making request: %v", err)
 	}
 
 	res, err := c.httpClient.Do(req)
 	if err != nil {
-		fmt. Errorf("Error getting response: %v", err)
+		return AreaLocationList{}, fmt.Errorf("error getting response: %v", err)
 	}
 
 	defer res.Body.Close()
@@ -42,7 +42,7 @@ func GetAreas (c Client, url string) (AreaLocationList, error) {
 
 	decoder	:= json.NewDecoder(res.Body)
 	if err := decoder.Decode(&areaLocationList); err != nil {
-		fmt.Errorf("Error decoding: %v", err)
+		return AreaLocationList{}, fmt.Errorf("error deocding request: %v", err)
 	}
 
 	return areaLocationList, nil
