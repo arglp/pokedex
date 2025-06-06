@@ -5,7 +5,7 @@ import (
 	"github.com/arglp/pokedex/internal/pokeapi"
 )
 
-func commandMapf(cfg *config) error {
+func commandMapf(cfg *config, parameter string) error {
 	url := ""
 	if cfg.nextLocationsURL != nil {
 		url = *cfg.nextLocationsURL
@@ -25,7 +25,7 @@ func commandMapf(cfg *config) error {
 	return nil
 }
 
-func commandMapb(cfg *config) error {
+func commandMapb(cfg *config, parameter string) error {
 	if cfg.prevLocationsURL == nil || *cfg.prevLocationsURL == ""  {
 		fmt.Println("you're on the first page")
 	} else {
