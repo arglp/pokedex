@@ -6,10 +6,12 @@ import (
 	"os"
 
 	"github.com/arglp/pokedex/internal/pokeapi"
+	"github.com/arglp/pokedex/internal/pokecache"
 )
 
 type config struct{
 	pokeapiClient		pokeapi.Client
+	pokecacheCache		pokecache.Cache
 	nextLocationsURL	*string
 	prevLocationsURL	*string
 }

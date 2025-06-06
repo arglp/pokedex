@@ -10,7 +10,7 @@ func commandMapf(cfg *config) error {
 	if cfg.nextLocationsURL != nil {
 		url = *cfg.nextLocationsURL
 	} 
-	MapList, err := pokeapi.GetAreas(cfg.pokeapiClient, url)
+	MapList, err := pokeapi.GetAreas(cfg.pokeapiClient, cfg.pokecacheCache, url)
 	if err != nil {
 		return err
 	}
@@ -29,7 +29,7 @@ func commandMapb(cfg *config) error {
 	if cfg.prevLocationsURL == nil || *cfg.prevLocationsURL == ""  {
 		fmt.Println("you're on the first page")
 	} else {
-		MapList, err := pokeapi.GetAreas(cfg.pokeapiClient, *cfg.prevLocationsURL)
+		MapList, err := pokeapi.GetAreas(cfg.pokeapiClient, cfg.pokecacheCache, *cfg.prevLocationsURL)
 		if err != nil {
 			return err
 		}

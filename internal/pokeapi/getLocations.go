@@ -4,6 +4,9 @@ import (
 	"encoding/json"
 	"net/http"
 	"fmt"
+	"github.com/arglp/pokedex/internal/pokecache"
+	"io"
+	"bytes"
 )
 
 
@@ -19,7 +22,7 @@ type Location struct {
 	Url string `json:"url"`
 }
 
-func GetAreas (c Client, url string) (AreaLocationList, error) {
+func GetAreas (c Client, cache pokecache.Cache, url string) (AreaLocationList, error) {
 	fullUrl := ""
 	if url == "" {
 		fullUrl = baseUrl + "/location-area"
@@ -27,23 +30,35 @@ func GetAreas (c Client, url string) (AreaLocationList, error) {
 		fullUrl = url
 	}
 
-	req, err := http.NewRequest("GET", fullUrl, nil)
-	if err != nil {
-		return AreaLocationList{}, fmt.Errorf("error making request: %v", err)
+	areaLocationList := AreaLocationList{}
+	var buffer *bytes.Buffer
+
+	cacheData, exists := cache.Get(fullUrl)
+	if !exists{
+		req, err := http.NewRequest("GET", fullUrl, nil)
+		if err != nil {
+			return AreaLocationList{}, fmt.Errorf("error making request: %v", err)
+		}
+
+		res, err := c.httpClient.Do(req)
+		if err != nil {
+			return AreaLocationList{}, fmt.Errorf("error getting response: %v", err)
+		}
+
+		defer res.Body.Close()
+		data, err := io.ReadAll(res.Body)
+		if err != nil {
+			return AreaLocationList{}, fmt.Errorf("error decoding request: %v", err)
+		}
+		cache.Add(fullUrl, data)
+		buffer = bytes.NewBuffer(data)
+	} else {
+		buffer = bytes.NewBuffer(cacheData)
 	}
-
-	res, err := c.httpClient.Do(req)
-	if err != nil {
-		return AreaLocationList{}, fmt.Errorf("error getting response: %v", err)
-	}
-
-	defer res.Body.Close()
-	var areaLocationList AreaLocationList
-
-	decoder	:= json.NewDecoder(res.Body)
+	decoder	:= json.NewDecoder(buffer)
 	if err := decoder.Decode(&areaLocationList); err != nil {
 		return AreaLocationList{}, fmt.Errorf("error deocding request: %v", err)
-	}
 
+	}
 	return areaLocationList, nil
 }
