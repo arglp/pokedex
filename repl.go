@@ -82,6 +82,11 @@ func getCommandRegister() map[string]cliCommand{
 			description:	"Catches the Pokémon indicated as the paremeter",
 			callback:		commandCatch,
 		},
+		"inspect": {
+			name:			"inspect",
+			description: 	"Shows basic information of the caught Pokemon",
+			callback:		commandInspect,
+		},
 	}
 	return commands
 }

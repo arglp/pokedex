@@ -10,10 +10,34 @@ import (
 )
 
 type Poke struct {
-	Id					int					`json:"id"`
-	Name				string 				`json:"name"`
-	BaseExperience		int				 	`json:"base_experience"`
+	Id					int			`json:"id"`
+	Name				string 		`json:"name"`
+	BaseExperience		int			`json:"base_experience"`
+	Height				int			`json:"height"`
+	Weight				int			`json:"weight"`
+	Stats				[]PokeStats		`json:"stats"`		
+	Types				[]PokeType	`json:"types"`
 }
+
+type PokeStats struct {
+	Stat					Stat		`json:"stat"`
+	BaseStat				int			`json:"base_stat"`
+}
+
+type Stat struct {
+	Name					string			`json:"name"`
+}
+
+type PokeType struct {
+	Type					Type		`json:"type"`
+}
+
+type Type struct {
+	Name					string		`json:"name"`
+}
+
+
+
 
 func GetPokemon (c Client, cache pokecache.Cache, name string) (Poke, error) {
 	url := baseUrl + "/pokemon/" + name
