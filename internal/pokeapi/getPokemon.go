@@ -9,47 +9,34 @@ import (
 	"bytes"
 )
 
-
-
-type LocationArea struct {
+type Poke struct {
 	Id					int					`json:"id"`
 	Name				string 				`json:"name"`
-	PokemonEncounters	[]PokemonEncounter 	`json:"pokemon_encounters"`
+	BaseExperience		int				 	`json:"base_experience"`
 }
 
-type PokemonEncounter struct {
-	Pokemon 				Pokemon				`json:"pokemon"`
+func GetPokemon (c Client, cache pokecache.Cache, name string) (Poke, error) {
+	url := baseUrl + "/pokemon/" + name
 	
-}
-
-type Pokemon struct {
-	Name				string				`json:"name"`
-	Url					string				`json:"url"`
-
-}
-
-func GetPokemon (c Client, cache pokecache.Cache, area string) (LocationArea, error) {
-	url := baseUrl + "/location-area/" + area 
-	
-	locationArea := LocationArea{}
+	poke := Poke{}
 	var buffer *bytes.Buffer
 
 	cacheData, exists := cache.Get(url)
 	if !exists{
 		req, err := http.NewRequest("GET", url, nil)
 		if err != nil {
-			return LocationArea{}, fmt.Errorf("error making request: %v", err)
+			return Poke{}, fmt.Errorf("error making request: %v", err)
 		}
 
 		res, err := c.httpClient.Do(req)
 		if err != nil {
-			return LocationArea{}, fmt.Errorf("error getting response: %v", err)
+			return Poke{}, fmt.Errorf("error getting response: %v", err)
 		}
 
 		defer res.Body.Close()
 		data, err := io.ReadAll(res.Body)
 		if err != nil {
-			return LocationArea{}, fmt.Errorf("error decoding request: %v", err)
+			return Poke{}, fmt.Errorf("error decoding request: %v", err)
 		}
 		cache.Add(url, data)
 		buffer = bytes.NewBuffer(data)
@@ -57,9 +44,9 @@ func GetPokemon (c Client, cache pokecache.Cache, area string) (LocationArea, er
 		buffer = bytes.NewBuffer(cacheData)
 	}
 	decoder	:= json.NewDecoder(buffer)
-	if err := decoder.Decode(&locationArea); err != nil {
-		return LocationArea{}, fmt.Errorf("error deocding request: %v", err)
+	if err := decoder.Decode(&poke); err != nil {
+		return Poke{}, fmt.Errorf("error deocding request: %v", err)
 
 	}
-	return locationArea, nil
+	return poke, nil
 }

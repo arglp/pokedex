@@ -14,6 +14,7 @@ type config struct{
 	pokecacheCache		pokecache.Cache
 	nextLocationsURL	*string
 	prevLocationsURL	*string
+	caughtPokemon		map[string]pokeapi.Poke
 }
 
 type cliCommand struct {
@@ -22,9 +23,11 @@ type cliCommand struct {
 	callback	func(*config, string) error
 }
 
+
 func startRepl(cfg *config) {
 	scanner := bufio.NewScanner(os.Stdin)
 	commands := getCommandRegister()
+	
 
 	for {
 		print("Pokedex > ")
@@ -73,6 +76,11 @@ func getCommandRegister() map[string]cliCommand{
 			name:			"explore",
 			description:	"Takes a name of a location area as an argument and shows a list of all the Pokémon located there",
 			callback:		commandExplore,
+		},
+		"catch": {
+			name:			"catch",
+			description:	"Catches the Pokémon indicated as the paremeter",
+			callback:		commandCatch,
 		},
 	}
 	return commands

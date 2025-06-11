@@ -10,7 +10,7 @@ func commandExplore(cfg *config, parameter string) error {
 		fmt.Println("Please enter location name as a parameter")
 	} else {
 		fmt.Printf("Exploring %v...\n", parameter)
-		area, err := pokeapi.GetPokemon(cfg.pokeapiClient, cfg.pokecacheCache, parameter)
+		area, err := pokeapi.GetPokemonByLocation(cfg.pokeapiClient, cfg.pokecacheCache, parameter)
 		if err != nil {
 			return err
 		}
